@@ -38,7 +38,7 @@ namespace MijnuriAPI.Controllers
 
             var userToCreate = new User
             {
-                Username = userForRegisterDto.Username
+                Username = userForRegisterDto.Username,
             };
 
             var createdUser = await authRepo.Register(userToCreate, userForRegisterDto.Password);
