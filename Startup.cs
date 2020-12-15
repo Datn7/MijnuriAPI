@@ -47,6 +47,7 @@ namespace MijnuriAPI
             services.AddDbContext<DataContext>(x=> x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddCors();
             services.AddAutoMapper(typeof(DatingRepository).Assembly);
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IDatingRepository, DatingRepository>();
 

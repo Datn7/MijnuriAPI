@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -21,11 +22,13 @@ namespace MijnuriAPI.Controllers
     {
         private readonly IAuthRepository authRepo;
         private readonly IConfiguration configuration;
+        private readonly IMapper mapper;
 
-        public AuthController(IAuthRepository authRepo, IConfiguration configuration)
+        public AuthController(IAuthRepository authRepo, IConfiguration configuration, IMapper mapper)
         {
             this.authRepo = authRepo;
             this.configuration = configuration;
+            this.mapper = mapper;
         }
 
         [HttpPost("register")]
@@ -75,7 +78,13 @@ namespace MijnuriAPI.Controllers
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return Ok(new { token = tokenHandler.WriteToken(token) });
+            var user = mapper.Map<UserForListDto>(userFromRepo);
+
+            return Ok(new 
+            { 
+                token = tokenHandler.WriteToken(token),
+                user
+            });
         }
 
     }

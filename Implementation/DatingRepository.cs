@@ -29,6 +29,17 @@ namespace MijnuriAPI.Implementation
             context.Remove(entity);
         }
 
+        public async Task<Photo> GetMainPhotoForUser(int userId)
+        {
+            return await context.Photos.Where(u => u.User.Id == userId).FirstOrDefaultAsync(p => p.IsMain);
+        }
+
+        public async Task<Photo> GetPhoto(int id)
+        {
+            var photo = await context.Photos.FirstOrDefaultAsync(p => p.Id == id);
+            return photo;
+        }
+
         public async Task<User> GetUser(int id)
         {
             var user = await context.Users.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id);

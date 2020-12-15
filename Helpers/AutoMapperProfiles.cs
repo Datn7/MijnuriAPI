@@ -12,6 +12,7 @@ namespace MijnuriAPI.Helpers
     {
         public AutoMapperProfiles()
         {
+            //source to dest
             CreateMap<User, UserForListDto>()
                 .ForMember(d => d.PhotoUrl, opt => opt.MapFrom(s => s.Photos.FirstOrDefault(p => p.IsMain).Url))
                 .ForMember(d => d.Age, opt => opt.MapFrom(s => s.DateOfBirth.CalculateAge()));
@@ -20,6 +21,9 @@ namespace MijnuriAPI.Helpers
                 .ForMember(d => d.PhotoUrl, opt => opt.MapFrom(s => s.Photos.FirstOrDefault(p => p.IsMain).Url))
                 .ForMember(d => d.Age, opt => opt.MapFrom(s => s.DateOfBirth.CalculateAge()));
             CreateMap<Photo, PhotosForDetailedDto>();
+            CreateMap<UserForUpdateDto, User>();
+            CreateMap<Photo, PhotoForReturnDto>();
+            CreateMap<PhotoForCreationDto, Photo>();
         }
     }
 }
