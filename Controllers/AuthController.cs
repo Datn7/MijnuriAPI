@@ -39,14 +39,14 @@ namespace MijnuriAPI.Controllers
             if (await authRepo.UserExists(userForRegisterDto.Username))
                 return BadRequest("მომხმარებელი უკვე არსებობს");
 
-            var userToCreate = new User
-            {
-                Username = userForRegisterDto.Username,
-            };
+            var userToCreate = mapper.Map<User>(userForRegisterDto);
 
             var createdUser = await authRepo.Register(userToCreate, userForRegisterDto.Password);
 
-            return StatusCode(201);
+            var userToReturn = mapper.Map<UserForDetailedDto>(createdUser);
+
+            //return StatusCode(201);
+            return CreatedAtRoute("GetUser", new { controller = "Users", id = createdUser.Id }, userToReturn);
         }
 
         [HttpPost("login")]
