@@ -44,7 +44,7 @@ namespace MijnuriAPI
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MijnuriAPI", Version = "v1" });
             });
 
-            services.AddDbContext<DataContext>(x=> x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DataContext>(x=> x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddCors();
             services.AddAutoMapper(typeof(DatingRepository).Assembly);
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
@@ -63,6 +63,8 @@ namespace MijnuriAPI
             });
 
             services.AddScoped<LogUserActivity>();
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
