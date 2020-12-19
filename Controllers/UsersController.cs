@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using MijnuriAPI.Dtos;
 using MijnuriAPI.Helpers;
 using MijnuriAPI.Interfaces;
+using MijnuriAPI.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,6 +75,34 @@ namespace MijnuriAPI.Controllers
                 return NoContent();
 
             throw new Exception($"მომხმარებლი {id} ვერ შეინახა");
+        }
+
+        [HttpPost("{id}/like/{recipientId}")]
+        public async Task<IActionResult> LikeUser(int id, int recipientId)
+        {
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
+
+            var like = await datingRepo.GetLike(id, recipientId);
+
+            if (like != null)
+                return BadRequest("უკვე მოგწონს ესჩემისა");
+
+            if (await datingRepo.GetUser(recipientId) == null)
+                return NotFound();
+
+            like = new Like
+            {
+                LikerId = id,
+                LikeeId = recipientId
+            };
+
+            datingRepo.Add(like);
+
+            if (await datingRepo.SaveAll())
+                return Ok();
+
+            return BadRequest("ვერ მოხერხდა მოწონება");
         }
     }
 }
