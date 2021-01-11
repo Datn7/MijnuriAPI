@@ -8,6 +8,7 @@ namespace MijnuriAPI.Helpers
 {
     public class PagedList<T> :List<T>
     {
+        //paged list of class that return current page, total pages, page size and total count of items
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
         public int PageSize { get; set; }

@@ -15,6 +15,7 @@ namespace MijnuriAPI.Controllers
     {
         private readonly DataContext dataContext;
 
+        //access datacontext
         public ValuesController(DataContext dataContext)
         {
             this.dataContext = dataContext;
@@ -23,28 +24,34 @@ namespace MijnuriAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetValues()
         {
+            //get values from db
             var values = await dataContext.Values.ToListAsync();
 
+            //return them
             return Ok(values);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetValue(int id)
         {
+            //get single value from db
             var value = await dataContext.Values.FirstOrDefaultAsync(x => x.Id == id);
 
+            //return it
             return Ok(value);
         }
 
         [HttpGet("strings")]
         public ActionResult<IEnumerable<string>> GetStringArray()
         {
+            //return array of strings
             return new string[] { "ერთი", "ორი" };
         }
 
         [HttpGet("strings/{id}")]
         public ActionResult<string> GetSingleString(int id)
         {
+            //return one string
             return "მხოლოდ ერთი სტრინგი";
         }
     }

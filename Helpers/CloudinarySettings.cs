@@ -7,6 +7,7 @@ namespace MijnuriAPI.Helpers
 {
     public class CloudinarySettings
     {
+        //cloudinary settings
         public string CloudName { get; set; }
         public string ApiKey { get; set; }
         public string ApiSecret { get; set; }

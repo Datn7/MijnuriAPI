@@ -39,18 +39,24 @@ namespace MijnuriAPI
         {
 
             services.AddControllers();
+
+            //use swagger
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MijnuriAPI", Version = "v1" });
             });
 
+            //add sql server connection and dbcontext
             services.AddDbContext<DataContext>(x=> x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddCors();
             services.AddAutoMapper(typeof(DatingRepository).Assembly);
+
+            //configure cloudinary settings with cclass and from appsettings
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IDatingRepository, DatingRepository>();
 
+            //setup authentication to use tokens
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters

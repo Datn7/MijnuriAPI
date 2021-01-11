@@ -7,6 +7,7 @@ namespace MijnuriAPI.Helpers
 {
     public class UserParams
     {
+        //user parameters that return specific group of users
         private const int MaxPageSize = 50;
         public int PageNumber { get; set; } = 1;
         private int pageSize =10;

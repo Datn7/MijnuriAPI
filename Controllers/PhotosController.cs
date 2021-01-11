@@ -46,8 +46,10 @@ namespace MijnuriAPI.Controllers
         [HttpGet("{id}", Name ="GetPhoto")]
         public async Task<IActionResult> GetPhoto(int id)
         {
+            //get photo with photo id
             var photoFromRepo = await repo.GetPhoto(id);
 
+            //map photo to dto
             var photo = mapper.Map<PhotoForReturnDto>(photoFromRepo);
 
             return Ok(photo);
@@ -121,67 +123,92 @@ namespace MijnuriAPI.Controllers
         [HttpPost("{id}/setMain")]
         public async Task<IActionResult> SetMainPhoto(int userId, int id)
         {
+            //check if userid is equal to token nameid
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
+            //get use with userId
             var user = await repo.GetUser(userId);
 
+            //check if there is photo with photoid
             if (!user.Photos.Any(p => p.Id == id))
                 return Unauthorized();
 
+            //get photo from db
             var photoFromRepo = await repo.GetPhoto(id);
 
+            //check if photo is main
             if (photoFromRepo.IsMain)
-                return BadRequest("This is already the main photo");
+                return BadRequest("ეს უკვე არის თქვენი მთავარი ფოტო");
 
+            //get current main photo from db with userId
             var currentMainPhoto = await repo.GetMainPhotoForUser(userId);
+
+            //set to false if its not main photo
             currentMainPhoto.IsMain = false;
 
+            //set photo to main photo
             photoFromRepo.IsMain = true;
 
+            //save changes and return no content
             if (await repo.SaveAll())
                 return NoContent();
 
-            return BadRequest("Could not set photo to main");
+            //if things go bad return badrequest
+            return BadRequest("მთავარი ფოტო ვერ დაყენდა");
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePhoto(int userId, int id)
         {
+            //check if userId is same as tokens nameid
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
                 return Unauthorized();
 
+            //get userId from repo
             var user = await repo.GetUser(userId);
 
+            //check if passed id is equal to any of the db photos id
             if (!user.Photos.Any(p => p.Id == id))
                 return Unauthorized();
 
+            //get photo from repo with id passed in queryparams
             var photoFromRepo = await repo.GetPhoto(id);
 
+            //check if photo is main or not
             if (photoFromRepo.IsMain)
-                return BadRequest("You cannot delete your main photo");
+                return BadRequest("მთავარ ფოტოს ვერ წაშლით!");
 
+            //if photo that we got from db's public id is not null
             if (photoFromRepo.PublicId != null)
             {
+                //initialize cloudinary's deletion params and pass publicId
                 var deleteParams = new DeletionParams(photoFromRepo.PublicId);
 
+                //delete picture on cloudinary
                 var result = cloudinary.Destroy(deleteParams);
 
+                //if deleted on cloudinary
                 if (result.Result == "ok")
                 {
+                    //delete from db
                     repo.Delete(photoFromRepo);
                 }
             }
 
+            //if we dont have publicId
             if (photoFromRepo.PublicId == null)
             {
+                //delete it from database
                 repo.Delete(photoFromRepo);
             }
 
+            //save result
             if (await repo.SaveAll())
                 return Ok();
 
-            return BadRequest("Failed to delete the photo");
+            //in any other case return bad request
+            return BadRequest("ფოტო ვერ წაიშალა");
         }
 
 

@@ -7,6 +7,7 @@ namespace MijnuriAPI.Helpers
 {
     public class PaginationHeader
     {
+        //pagination header that is added to response headers
         public int CurrentPage { get; set; }
         public int ItemsPerPage { get; set; }
         public int TotalItems { get; set; }

@@ -12,7 +12,7 @@ namespace MijnuriAPI.Helpers
     {
         public AutoMapperProfiles()
         {
-            //source to dest
+            //mappings from source to destination and also for members that does not match with type or name
             CreateMap<User, UserForListDto>()
                 .ForMember(d => d.PhotoUrl, opt => opt.MapFrom(s => s.Photos.FirstOrDefault(p => p.IsMain).Url))
                 .ForMember(d => d.Age, opt => opt.MapFrom(s => s.DateOfBirth.CalculateAge()));

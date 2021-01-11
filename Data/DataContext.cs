@@ -9,11 +9,13 @@ namespace MijnuriAPI.Data
 {
     public class DataContext : DbContext
     {
+        //create datacontext and pass options to main dbcontext class
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
 
         }
 
+        //create db sets that will be saved to database
         public DbSet<Value> Values { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Photo> Photos { get; set; }
@@ -21,7 +23,7 @@ namespace MijnuriAPI.Data
         public DbSet<Message> Messages { get; set; }
 
 
-
+        //override migration settings
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Like>().HasKey(k => new { k.LikerId, k.LikeeId });

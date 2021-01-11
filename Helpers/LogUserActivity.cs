@@ -15,10 +15,19 @@ namespace MijnuriAPI.Helpers
         {
             var resultContext = await next();
 
+            //get user id from token nameid
             var userId = int.Parse(resultContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            //get idatingrepo service
             var repo = resultContext.HttpContext.RequestServices.GetService<IDatingRepository>();
+
+            //get user
             var user = await repo.GetUser(userId);
+
+            //set last active to now
             user.LastActive = DateTime.Now;
+
+            //save changes
             await repo.SaveAll();
         }
     }

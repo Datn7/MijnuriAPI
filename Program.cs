@@ -16,28 +16,38 @@ namespace MijnuriAPI
     {
         public static void Main(string[] args)
         {
-            //seeding data
+            //seeding data before starting app
             var host = CreateHostBuilder(args).Build();
 
+            //set scope that this will be executed once on request
             using ( var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
 
                 try
                 {
+                    //get datacontext
                     var context = services.GetRequiredService<DataContext>();
+
+                    //add migrations
                     context.Database.Migrate();
+
+                    //seed data to db
                     SeedData.Seed.SeedUsers(context);
                 }
                 //error checking
                 catch(Exception ex)
                 {
+                    //log program class
                     var logger = services.GetRequiredService<ILogger<Program>>();
+                    
+                    //log errors in ex
                     logger.LogError(ex, "Error During Migration !!!");
                 }
             }
             //end of seeding
 
+            //run server
             host.Run();
         }
 

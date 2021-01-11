@@ -34,15 +34,20 @@ namespace MijnuriAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
+            //convert username to lowerletters
             userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
 
+            //check if user exists
             if (await authRepo.UserExists(userForRegisterDto.Username))
                 return BadRequest("მომხმარებელი უკვე არსებობს");
 
+            //map from userforregister to User class
             var userToCreate = mapper.Map<User>(userForRegisterDto);
 
+            //register user with repo
             var createdUser = await authRepo.Register(userToCreate, userForRegisterDto.Password);
 
+            //map from createduser to usertoreturn
             var userToReturn = mapper.Map<UserForDetailedDto>(createdUser);
 
             //return StatusCode(201);
@@ -52,21 +57,27 @@ namespace MijnuriAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
+            //get user from repo and convert username to lowercase both are strings
             var userFromRepo = await authRepo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
 
+            //if there is no user return unauthorized
             if (userFromRepo == null)
                 return Unauthorized();
 
+            //create claims that id and usernames are there
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
                 new Claim(ClaimTypes.Name, userFromRepo.Username)
             };
 
+            //get key from appsettings, its value
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("AppSettings:Token").Value));
 
+            //encrypt gotten key with sha512
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
+            //return payload nameid unique_name and expire and valid and issued
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
@@ -74,12 +85,16 @@ namespace MijnuriAPI.Controllers
                 SigningCredentials = creds
             };
 
+            //create token handler
             var tokenHandler = new JwtSecurityTokenHandler();
 
+            //create token from descriptor
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
+            //map from repo to usertolistdto
             var user = mapper.Map<UserForListDto>(userFromRepo);
 
+            //return token and user
             return Ok(new 
             { 
                 token = tokenHandler.WriteToken(token),

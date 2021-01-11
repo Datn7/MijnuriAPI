@@ -11,6 +11,7 @@ namespace MijnuriAPI.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
+        //create array of strings
         private static readonly string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -26,6 +27,7 @@ namespace MijnuriAPI.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            //generate random number
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
